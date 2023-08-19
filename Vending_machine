@@ -1,0 +1,88 @@
+// Code your design here
+module Vending_machine(input wire [1:0] coin,
+                       input wire reset,
+                       input clk,
+                       output reg ans,
+                       output reg change);
+  
+  reg [3:0] stat,n_state;
+  
+  parameter sin=4'b0000, s10=4'b0001, s20=4'b0010, s30=4'b0011, s40=4'b0100, s50=4'b0101, s60=4'b0110, s70=4'b0111, s80=4'b1000;
+  
+  parameter ten=2'b01, twenty=2'b10, fifty=2'b11;
+  
+  always @(posedge clk, posedge reset)
+    begin
+      if(reset==1)
+        state<=sin;
+      else 
+        state<=n_state;
+    end
+  
+  
+  always @(coin,state)
+    
+      begin
+        case(state)
+          
+          sin: begin 
+            if(coin==ten)
+              n_state = sin;
+            else if(coin==twenty)
+              n_state = s20;
+            else
+              n_state = s50;
+          end
+          
+          s10: begin
+            if(coin==ten)
+              n_state = s20;
+            else if(coin==twenty)
+              n_state = s30;
+            else
+              n_state = s60;
+          end
+            
+          s20: begin
+            if(coin==ten)
+              n_state = s30;
+            else if(coin==twenty)
+              n_state = s40;
+            else
+              n_state = s70;
+          end
+          
+          s30: begin
+            if(coin==ten)
+              n_state = s40;
+            else if(coin==twenty)
+              state = s50;
+            else
+              n_state = s80;
+          end
+          
+          s40: n_state = sin;
+          s50: n_state = sin;
+          s60: n_state = sin;
+          s70: n_state = sin;
+          s80: n_state = sin;
+          default: n_state = sin;
+        endcase
+      end
+  
+  always @(state)
+     
+      begin
+        case(state)
+          sin: begin ans=0; change=0;end
+          s10: begin ans=0; change=0;end
+          s20: begin ans=0; change=0;end
+          s30: begin ans=0; change=0;end
+          s40: begin ans=1; change=0;end
+          s50: begin ans=1; change=1;end
+          s60: begin ans=1; change=1;end
+          s70: begin ans=1; change=1;end
+          s80: begin ans=1; change=1;end  
+        endcase
+      end
+endmodule
