@@ -1,0 +1,59 @@
+// Code your design here
+
+module ALU_8bit(
+    input [2:0] operation,
+    input [7:0] num1,
+    input  [7:0] num2,
+    
+    output CarryOut ,
+    output reg [15:0] Ans
+    );
+ 
+    
+  
+    wire [8:0] tmp;
+    assign tmp = {1'b0,num1} + {1'b0,num2};
+    assign CarryOut = tmp[8];
+    parameter Add = 3'b000, subtract= 3'b001, multi = 3'b010, Lshift = 3'b011, 
+                    Rshift = 3'b100, AND = 3'b101, OR = 3'b110, XOR = 3'b111;
+    
+  always @(*)
+    begin
+     case(operation)
+       
+       Add: begin
+            Ans = num1 + num2; 
+            end
+       
+       subtract: begin
+                 Ans = num1 - num2; 
+                 end     
+       
+       multi: begin
+                 Ans = num1 * num2; 
+                 end
+                    
+       Lshift: begin
+                 Ans = num1<<1; 
+                 end     
+  
+       Rshift: begin
+                Ans = num1>>1; 
+                end
+                                    
+       AND: begin
+              Ans = num1 & num2; 
+                  end   
+                  
+       OR: begin
+             Ans = num1 | num2; 
+            end     
+                                    
+        XOR: begin
+            Ans = num1 ^ num2; 
+          end  
+       
+      endcase
+    end
+      endmodule
+      
