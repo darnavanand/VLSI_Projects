@@ -1,0 +1,65 @@
+
+module fifo_mem(data_in,rst,clock,rd,wr,data_out,empty,full,fifo_cnt);
+
+  input [7:0] data_in;
+  input, rst,clock,rd,wr;
+  output empty,full;
+  output reg [7:0] data_out;
+  output reg [3:0] fifo_cnt;
+  reg [7:0] fifo_mem [0:7];
+  reg [2:0] rd_ptr, wr_ptr;
+  
+  assign empty = (fifo_cnt==0);
+  assign full = (fifo_cnt==8);
+  
+  //write operation
+  always(@posedge clock)
+    begin:
+      WRITE
+      if(wr && !full)
+        fifo_mem[wr_ptr] = data_in;
+      else if(wr && rd)
+        fifo_mem[wr_ptr] = data_in;
+    end
+  
+  //read operation
+  always @(posedge clock)
+    begin:
+      READ
+      if(rd && !empty)
+        data_out = fifo_mem[rd_ptr];
+      else if(rd && wr)
+        data_out = fifo_mem[rd_ptr];
+    end
+  
+  //pointer
+  always @(posedge clock)
+    begin: POINTER
+      if(rst)
+        begin
+          rd_ptr<=1'b0;
+          wr_ptr<=1'b0;
+        end
+      else
+        begin
+          wr_ptr<=((wr && !full) || (wr && rd)) ? wr_ptr+1 : wr_ptr;
+          rd_ptr<=((rd && !empty) || (wr && rd)) ? rd_ptr+1 : rd_ptr;
+        end
+    end
+  
+  //counter
+  always @(posedge clock)
+    begin
+      if(rst)
+        fifo_cnt<=1'b0;
+      else begin
+        case({wr,rd})
+          2'b00: fifo_mem<=fifo_cnt;
+          2'b01: fifo_cnt<=(fifo_cnt==0) ? 0: fifo_cnt+1;
+          2'b10: fifo_cnt<=(fifo_cnt==8) ? 8: fifo_cnt-1;
+          2'b11: fifo_cnt<=fifo_cnt;
+        endcase
+      end
+    end
+endmodule
+    
