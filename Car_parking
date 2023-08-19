@@ -1,0 +1,32 @@
+module car_parking(input wire [7:0] cars,
+                   output reg [3:0]ans);
+  always @(cars)
+    ans = cars[0]+cars[1]+cars[2]+cars[3]+cars[4]+cars[5]+cars[6]+cars[7];
+  
+endmodule
+
+//TESTBENCH
+
+module car_TB;
+  
+  reg [7:0] cars;
+  wire [3:0] ans;
+  
+  car_parking d0(cars,ans);
+  
+  initial
+    begin
+      $dumpfile("dump.vcd");
+      $dumpvars(1,car_TB);
+      #10 cars = 8'b00000000;
+      #10 cars[0]= 1;
+      #10 cars[7]=1;
+      #10 cars[5]=1;
+      #10 cars[0] = 0;
+      #10 cars[4] = 1;
+      #10 cars[7]=0;
+      #10 cars[3]=1;
+      #10 cars[2]=1;
+      #10 cars[5]=0;
+    end
+endmodule
